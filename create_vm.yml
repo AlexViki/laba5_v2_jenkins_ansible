@@ -1,0 +1,84 @@
+---
+- name: "Create Azure resources"
+  connection: local
+  hosts: all
+  vars_files:
+    - /laba5/git_files/vars.yml
+    
+  tasks:
+    - name: "----->Create Resource Group"
+      azure_rm_resourcegroup:
+        name: "{{resourcegroup_name}}"
+        location: "{{location}}"
+
+    - name: "----->Create Virtual Network"
+      azure_rm_virtualnetwork:
+        name: "{{virtualnetwork_name}}"
+        resource_group: "{{resourcegroup_name}}"
+        address_prefixes_cidr:
+          - "{{virtualnetwork_cidr}}"
+
+    - name: "----->Create Subnet in {{virtualnetwork_name}} for VMs"
+      azure_rm_subnet:
+        name: "{{subnet_name}}"
+        virtual_network_name: "{{virtualnetwork_name}}"
+        resource_group: "{{resourcegroup_name}}"
+        address_prefix_cidr: "{{subnet_cidr}}"
+      register: subnet
+
+    - name: "----->Create security rules (if local IP address was given)"
+      azure_rm_securitygroup:
+        name: "{{securitygroup_name}}"
+        resource_group: "{{resourcegroup_name}}"
+        purge_rules: yes
+        rules:
+          - name: 'Allow-SSH'
+            protocol: 'Tcp'
+            source_address_prefix: "*"
+            destination_port_range: 22
+            access: Allow
+            priority: 1000
+            direction: Inbound
+          - name: 'Allow-HTTP'
+            protocol: 'Tcp'
+            source_address_prefix: "*"
+            destination_port_range: 80
+            access: Allow
+            priority: 1001
+            direction: Inbound
+#      when: local_ip | ipaddr
+
+    - name: "----->Create a network interface for each VM"
+      azure_rm_networkinterface:
+        name: "{{nic_root_name}}"
+        resource_group: "{{resourcegroup_name}}"
+        virtual_network: "{{virtualnetwork_name}}"
+        subnet_name: "{{subnet_name}}"
+        security_group: "{{securitygroup_name}}"
+        ip_configurations:
+          - name: "ipconfig"
+            public_ip_address_name: "{{public_ip_name}}"
+            primary: True
+#      with_sequence: count="{{instances_number}}"
+
+    - name: "----->Create VM with existing NIC"
+      azure_rm_virtualmachine:
+        resource_group: "{{resourcegroup_name}}"
+        name: "{{vm_root_name}}"
+        vm_size: "{{vm_size}}"
+        managed_disk_type: "{{disk_type}}"
+        admin_username: "{{admin_username}}"
+#        admin_password: xxxxxxx
+#        availability_set: "{{availabilityset_name}}"
+        ssh_password_enabled: false
+        ssh_public_keys:
+          - path: "/home/{{admin_username}}/.ssh/authorized_keys"
+            key_data: "{{lookup('file', '{{admin_pub_path}}') }}"
+        network_interface_names: "{{nic_root_name}}"
+        custom_data: "{{ lookup('file', 'cloud-init.yml') }}"
+        image:
+          offer: UbuntuServer
+          publisher: Canonical
+          sku: '18.04-LTS'
+          version: latest
+#      with_sequence: count="{{instances_number}}"
