@@ -11,8 +11,10 @@ echo ""
 echo "                Generate NEW SSH key                       "
 echo "###########################################################"
 
-sudo ssh-keygen -t rsa -N "" -f ~/.ssh/laba5_jenkins_to_ansible_to_azure <<< y
-sudo chmod 600 ~/.ssh/laba5*
+sudo mkdir -p /key/.ssh
+sudo ssh-keygen -t rsa -N "" -f /key/.ssh/laba5_jenkins_to_ansible_to_azure <<< y
+sudo chmod 600 /key/.ssh/laba5*
+sudo chown jenkins:jenkins /key/.ssh/*
 
 echo ""
 echo "                 Install Azure CLI                         "
