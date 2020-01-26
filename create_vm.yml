@@ -3,7 +3,7 @@
   connection: local
   hosts: all
   vars_files:
-    - ./vars.yml
+    - /var/lib/jenkins/workspace/laba5_v2_jenkins_ansible/vars.yml
     
   tasks:
     - name: "----->Create Resource Group"
