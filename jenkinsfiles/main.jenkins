@@ -2,6 +2,7 @@
 properties([disableConcurrentBuilds()])
 pipeline {
         agent any
+		// run every minute
 		triggers {pollSCM('* * * * *')}
         options {
             timestamps()
