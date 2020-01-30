@@ -11,8 +11,7 @@ pipeline {
             stage('GIT Cloning...') {
                 steps {
                      echo '----> Git clon'
-//                   	git 'https://github.com/AlexViki/laba5_v2_jenkins_ansible.git'
-						sh 'pwd'
+					 sh 'pwd'
                 }
                 }
                 stage('Test...') {
@@ -24,7 +23,7 @@ pipeline {
                 stage('Deploy...') {
                 steps {
                      echo '----> Deploy new VM via Ansible'
-//                     sh 'ansible-playbook -i $WORKSPACE/hosts $WORKSPACE/create_vm.yml'
+                     sh 'ansible-playbook -i $WORKSPACE/hosts $WORKSPACE/create_vm.yml'
                 }
                 }
 }
