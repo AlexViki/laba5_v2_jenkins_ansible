@@ -11,7 +11,8 @@ pipeline {
             stage('GIT Cloning...') {
                 steps {
                      echo '----> Git clon'
-                     git 'https://github.com/AlexViki/laba5_v2_jenkins_ansible.git'
+//                   	git 'https://github.com/AlexViki/laba5_v2_jenkins_ansible.git'
+						sh 'pwd'
                 }
                 }
                 stage('Test...') {
