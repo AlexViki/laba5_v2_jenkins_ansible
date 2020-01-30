@@ -14,3 +14,10 @@ You need to copy text from "run_all.sh" and put it to Freestyle project in block
 script will install all necessary package for running "Ansible" file
 use Azure service principal for authorization "az ad sp create-for-rbac --name AnsibleService" before running this script
 create variables in jenkins: "url" "pass" "tenant" and and insert to these variables your result from "Azure service principal"
+
+# How to setup "pipline"
+
+1. Crete new "pipline"
+2. Check the box "GitHub project" and insert you URL of GitHub "https://github.com/AlexViki/laba5_v2_jenkins_ansible.git/"
+3. Check the box "GitHub hook trigger for GITScm polling"
+4. In "Pipeline" block choose "Definition" -> "Pipeline script from SCM"; "SCM" -> "GIT"; "Repository URL" -> "git@github.com:AlexViki/laba5_v2_jenkins_ansible.git"; "Credentials" -> "YOUR KEY TO GITHUB"; "Script Path" -> "jenkinsfiles/main.jenkins"
