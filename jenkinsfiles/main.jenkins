@@ -13,7 +13,7 @@ pipeline {
                 steps {
                      echo '----> Git clon'
 					 withCredentials([usernamePassword(credentialsId: 'Azure', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')])
-					 az login --service-principal -u http://ServicePrincipalName -p $PASSWORD --tenant $USERNAME
+					 sh 'az login --service-principal -u http://ServicePrincipalName -p $PASSWORD --tenant $USERNAME'
 					 sh 'pwd'
                 }
                 }
