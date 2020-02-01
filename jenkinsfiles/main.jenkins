@@ -12,7 +12,7 @@ pipeline {
             stage('GIT Cloning...') {
                 steps {
                      echo '----> Git clon'
-					 withCredentials([usernamePassword(credentialsId: 'Azure-123', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')])
+					 withCredentials([usernamePassword(credentialsId: 'amazon', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')])
 						sh 'pwd'
 						sh "echo pass $PASSWORD"
 						sh "echo user $USERNAME"
