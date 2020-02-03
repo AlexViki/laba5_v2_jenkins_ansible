@@ -32,7 +32,7 @@ pipeline {
 								sh 'ansible-playbook --syntax-check ${WORKSPACE}/create_vm.yml'
 							}
 						}
-						stage ('Version) {
+						stage ('Version') {
 							steps {
 								echo '----> Test version'
 								sh 'ansible --version'
