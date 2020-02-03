@@ -1,42 +1,44 @@
 #!groovy
+properties([disableConcurrentBuilds()])
 pipeline {
-    agent any
-	    options {
-			timestamps()
+        agent any
+		// run every minute
+		//triggers {pollSCM('* * * * *')}
+        options {
+            timestamps()
         }
-    stages {
-        stage('Install Soft...') {
-            parallel {
-                stage('Install Azure') {
-                    steps {
-                        echo '----> Install Azure'
-						sh 'sudo curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash'
-						withCredentials([azureServicePrincipal('Laba5-v2-ServicePrincipalName')]) {
-							sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+		
+        stages {
+            stage('Install Azure...') {
+                steps {
+                    echo 'Installing Azure'
+					sh 'sudo curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash'
+					withCredentials([azureServicePrincipal('Laba5-v2-ServicePrincipalName')]) {
+						sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+					}
+				}
+				}
+                stage('Testing ...') {
+					parallel {
+						stage ('YML file') {
+							steps {
+								echo '----> Test YML file'
+								sh 'ansible-playbook --syntax-check ${WORKSPACE}/create_vm.yml'
+							}
 						}
-                    }
+						stage ('YML file 2') {
+							steps {
+								echo '----> Test version'
+								sh 'ansible --version'
+							}
+						}
+					}
+				}
+                stage('Deploy VM...') {
+					steps {
+						echo '----> Deploy new VM via Ansible'
+//                  	sh 'ansible-playbook -i $WORKSPACE/hosts $WORKSPACE/create_vm.yml'
+					}
                 }
-                stage('Install Ansible') {
-                    steps {
-						sh 'sudo apt-get update'
-						sh 'sudo apt-get install -y libssl-dev libffi-dev python-dev python-pip'
-						sh 'sudo pip install ansible'
-						sh 'sudo pip install ansible[azure]'
-                    }
-                }
-            }
-        }
-		stage('Test YML file...') {
-                steps {
-                     echo '----> Test YML file'
-                     sh 'ansible-playbook --syntax-check ${WORKSPACE}/create_vm.yml'
-                }
-                }
-		 stage('Deploy VM...') {
-                steps {
-                     echo '----> Deploy new VM via Ansible'
-//                     sh 'ansible-playbook -i $WORKSPACE/hosts $WORKSPACE/create_vm.yml'
-                }
-                }
-    }
+}
 }
