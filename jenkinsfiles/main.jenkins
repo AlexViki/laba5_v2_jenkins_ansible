@@ -12,7 +12,7 @@ pipeline {
             stage('GIT Cloning...') {
                 steps {
                      echo '----> Git clon'
-					 withCredentials([azureServicePrincipal(Laba5-v2-ServicePrincipalName)]) {
+					 withCredentials([azureServicePrincipal('credentials_id')]) {
 						sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
 					}
                 }
