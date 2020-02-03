@@ -36,7 +36,7 @@ pipeline {
 							steps {
 								echo '----> Test version'
 								sh 'ansible --version'
-								sh 'azure --version'
+								sh 'az --version'
 							}
 						}
 					}
