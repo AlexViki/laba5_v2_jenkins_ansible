@@ -44,7 +44,7 @@ pipeline {
                 stage('Deploy VM...') {
 					steps {
 						echo '----> Deploy new VM via Ansible'
-//                  	sh 'ansible-playbook -i $WORKSPACE/hosts $WORKSPACE/create_vm.yml'
+						sh 'ansible-playbook -i $WORKSPACE/hosts $WORKSPACE/create_vm.yml'
 					}
                 }
 }
