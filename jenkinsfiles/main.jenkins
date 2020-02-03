@@ -10,13 +10,25 @@ pipeline {
 		
         stages {
             stage('Install Azure...') {
-                steps {
-                     echo '----> Git clon'
-					 sh 'sudo curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash'
-					 withCredentials([azureServicePrincipal('Laba5-v2-ServicePrincipalName')]) {
-						sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-					}
-                }
+				paralel {
+				     stage {
+						steps {
+						echo '----> Git clon'
+						sh 'sudo curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash'
+						withCredentials([azureServicePrincipal('Laba5-v2-ServicePrincipalName')]) {
+							sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+						}
+						}
+					 }
+					 stage {
+						steps {
+						echo '----> Satge 2'
+						sh 'pwd'
+						}
+					 }
+					
+				}
+
                 }
                 stage('Test YML file...') {
                 steps {
@@ -27,7 +39,7 @@ pipeline {
                 stage('Deploy VM...') {
                 steps {
                      echo '----> Deploy new VM via Ansible'
-//                     sh 'ansible-playbook -i $WORKSPACE/hosts $WORKSPACE/create_vm.yml'
+//                   sh 'ansible-playbook -i $WORKSPACE/hosts $WORKSPACE/create_vm.yml'
                 }
                 }
 }
