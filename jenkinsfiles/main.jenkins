@@ -3,7 +3,7 @@ properties([disableConcurrentBuilds()])
 pipeline {
         agent any
 		// run every minute
-		triggers {pollSCM('* * * * *')}
+		//triggers {pollSCM('* * * * *')}
         options {
             timestamps()
         }
@@ -18,13 +18,13 @@ pipeline {
 					}
                 }
                 }
-                stage('Test...') {
+                stage('Test YML file...') {
                 steps {
                      echo '----> Test YML file'
                      sh 'ansible-playbook --syntax-check ${WORKSPACE}/create_vm.yml'
                 }
                 }
-                stage('Deploy...') {
+                stage('Deploy VM...') {
                 steps {
                      echo '----> Deploy new VM via Ansible'
 //                     sh 'ansible-playbook -i $WORKSPACE/hosts $WORKSPACE/create_vm.yml'
