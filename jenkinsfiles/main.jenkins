@@ -1,46 +1,42 @@
 #!groovy
-properties([disableConcurrentBuilds()])
 pipeline {
-        agent any
-		// run every minute
-		//triggers {pollSCM('* * * * *')}
-        options {
-            timestamps()
+    agent any
+	    options {
+			timestamps()
         }
-		
-        stages {
-            stage('Install Azure...') {
-				paralel {
-				     stage {
-						steps {
-						echo '----> Git clon'
+    stages {
+        stage('Install Soft...') {
+            parallel {
+                stage('Install Azure') {
+                    steps {
+                        echo '----> Install Azure'
 						sh 'sudo curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash'
 						withCredentials([azureServicePrincipal('Laba5-v2-ServicePrincipalName')]) {
 							sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
 						}
-						}
-					 }
-					 stage {
-						steps {
-						echo '----> Satge 2'
-						sh 'pwd'
-						}
-					 }
-					
-				}
-
+                    }
                 }
-                stage('Test YML file...') {
+                stage('Install Ansible') {
+                    steps {
+						sh 'sudo apt-get update'
+						sh 'sudo apt-get install -y libssl-dev libffi-dev python-dev python-pip'
+						sh 'sudo pip install ansible'
+						sh 'sudo pip install ansible[azure]'
+                    }
+                }
+            }
+        }
+		stage('Test YML file...') {
                 steps {
                      echo '----> Test YML file'
                      sh 'ansible-playbook --syntax-check ${WORKSPACE}/create_vm.yml'
                 }
                 }
-                stage('Deploy VM...') {
+		 stage('Deploy VM...') {
                 steps {
                      echo '----> Deploy new VM via Ansible'
-//                   sh 'ansible-playbook -i $WORKSPACE/hosts $WORKSPACE/create_vm.yml'
+//                     sh 'ansible-playbook -i $WORKSPACE/hosts $WORKSPACE/create_vm.yml'
                 }
                 }
-}
+    }
 }
