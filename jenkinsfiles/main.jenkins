@@ -9,15 +9,21 @@ pipeline {
         }
 		
         stages {
-            stage('Install Azure...') {
+            stage('Install SW...') {
                 steps {
-                    echo 'Installing Azure'
+                    echo '---------Installing Azure---------'
 					sh 'sudo curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash'
 					withCredentials([azureServicePrincipal('Laba5-v2-ServicePrincipalName')]) {
 						sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
 					}
+					echo '---------Installing Ansible---------'
+					sh 'sudo apt-get update'
+					sh 'sudo apt-get install -y libssl-dev libffi-dev python-dev python-pip'
+					sh 'sudo pip install ansible'
+					sh 'sudo pip install ansible[azure]'
 				}
 				}
+				
                 stage('Testing ...') {
 					parallel {
 						stage ('YML file') {
@@ -26,10 +32,11 @@ pipeline {
 								sh 'ansible-playbook --syntax-check ${WORKSPACE}/create_vm.yml'
 							}
 						}
-						stage ('YML file 2') {
+						stage ('Version) {
 							steps {
 								echo '----> Test version'
 								sh 'ansible --version'
+								sh 'azure --version'
 							}
 						}
 					}
